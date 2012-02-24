@@ -1,0 +1,11 @@
+Package: ZeligPanelmodels
+Version: 0.1
+Date: 2012-01-25
+Title: Zelig Implementation of Linear Models for Panel Data
+Author: Nathan A. Paxton
+Maintainer: Nathan A. Paxton <napaxton@post.harvard.edu>
+Depends: Zelig, plm
+Description: Allows Zelig to interface with the plm package (for econometric style est. of panel data)
+License: GPL (>=2)
+URL: http://gking.harvard.edu/zelig
+Packaged: 2012-02-21 16:19:54 UTC; root
