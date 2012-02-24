@@ -1,14 +1,14 @@
-\name{describe.pggls}
-\alias{describe.pggls}
+\name{describe.pan.plm}
+\alias{describe.pan.plm}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-describe.pggls
+\title{Describes the \code{plm()} model to Zelig
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+%%  ~~ A concise (1-5 lines) description of what the function does. ~~ 
+Describes the \code{plm()} model to Zelig
 }
 \usage{
-describe.pggls(...)
+\method{describe}{pan.plm}
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -16,25 +16,26 @@ describe.pggls(...)
 %%     ~~Describe \code{\dots} here~~
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
+% \details{
+% %%  ~~ If necessary, more details than the description above ~~
+% }  
+\value{a list processed by as.description
 %%  ~Describe the value returned
 %%  If it is a LIST, use
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
+% \references{
+% %% ~put references to the literature/web site here ~
+% } 
+\author{    
+Nathan A. Paxton \email{napaxton@post.harvard.edu}
 %%  ~~who you are~~
 }
-\note{
-%%  ~~further notes~~
-}
+% \note{
+% %%  ~~further notes~~
+% } 
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 

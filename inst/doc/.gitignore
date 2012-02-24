@@ -1,0 +1,7 @@
+^.git$
+^man/\..*$
+^man/\[.*$
+^.Rproj$
+^.RData$
+^.Rhistory$
+^.DS_Store$
