@@ -1,14 +1,12 @@
-\name{describe.pan.plm}
-\alias{describe.pan.plm}
+\name{pFormulaFix}
+\alias{pFormulaFix}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Describes the \code{plm()} model to Zelig
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~ 
-Describes the \code{plm()} model to Zelig
 }
 \usage{
-\method{describe}{pan.plm}(...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
