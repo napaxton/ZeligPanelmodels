@@ -26,7 +26,7 @@ zelig2pan.plm <- function(formula, pan.model=NULL, pan.index=NULL,..., data) {
 		"PLM will use default model (within/fixed effects).")
     }            
 
-    pan.model <- NULL  # vacate the pan.model parameter
+    # pan.model <- NULL  # vacate the pan.model parameter
 
 	list(
         .function = "plm",
@@ -34,12 +34,11 @@ zelig2pan.plm <- function(formula, pan.model=NULL, pan.index=NULL,..., data) {
 		formula = formula,
 		model = model,
 		data = data
-		#... #not technically necessary, according to Z4 doc'n, but left from the Z3 implementation
 		)
 }
 
 #' PLM HOOK
-#' Recast the plm formula from pFormula class to Formula class
+#' Recast the plm object from pFormula class to Formula class
 #' 
 #' @param obj ...
 #' @param zcall ..

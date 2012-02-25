@@ -1,4 +1,5 @@
 export(zelig2pan.plm)
+S3method(describe,pan.plm)
 S3method(param,pan.plm)                                                                                                                                                                                               
 S3method(qi,pan.plm)                                                                                                                                                                                              
 export(pFormulaFix)

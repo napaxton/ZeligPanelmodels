@@ -1,10 +1,11 @@
 \name{pFormulaFix}
 \alias{pFormulaFix}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Describes the \code{plm()} model to Zelig
+\title{Internal function to make Formual objects compatible
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~ 
+Transforms pFormula objects into Formula objects
 }
 \usage{
 }
@@ -17,7 +18,7 @@
 % \details{
 % %%  ~~ If necessary, more details than the description above ~~
 % }  
-\value{a list processed by as.description
+\value{a pFormula transformed to Formula
 %%  ~Describe the value returned
 %%  If it is a LIST, use
 %%  \item{comp1 }{Description of 'comp1'}

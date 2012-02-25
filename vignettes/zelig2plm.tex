@@ -1,0 +1,215 @@
+\subsection{{\tt panelmodel}: Panel Data (TSCS) Methods for [Continuous] Dependent Variables}
+\label{zelig2plm}
+The \texttt{plm} package allows for the estimation of panel/CSTS (cross-section, time series) models in a form familiar to political scientists, economists, and sociologists using such data. As the \texttt{plm} packages authors state, ``plm is a package for R which intends to make the estimation of linear panel models straightforward. plm provides functions to estimate a wide variety of models and to make (robust) inference.''
+
+The package provides functions to estimate linear models for panel data with: pooled, fixed, random, and between effects; individual or time-based effects; instrumental variable models; variable coefficient models; and general method of moments (GMM) models.
+
+\subsubsection{Syntax}
+\begin{verbatim}
+> z.out <- zelig((Y ~ X1 + X2, model = "plm", data = mydata, 
++ pan.model="within", pan.index=NULL) 
+> x.out <- setx(z.out) 
+> s.out <- sim(z.out, x=x.out)
+\end{verbatim}
+
+The \texttt{plm} package uses a special \texttt{data.frame()} method, the \texttt{pdata.frame()}, to set section and time index variables. You can pass those indices to your model if you have not set them already using the \texttt{pdata.frame()} command on your data.
+
+\subsubsection{Examples}
+Following the examples provided by Croissant and Millo:
+\begin{enumerate}
+\item Basic estimation of a random effects model with first differences
+%\begin{verbatim}
+
+Attach data:
+
+\texttt{> data(Grunfeld, package="plm")}
+
+Estimate model with Zelig:
+
+\begin{verbatim}
+> z.plm1 <- zelig(inv ~ value + capital, model="plm", data=Grunfeld, 
++ pan.model="random", pan.index=c("firm","year"))
+\end{verbatim}
+
+Summarize the regression output:
+
+\texttt{> summary(z.plm1)}
+
+Take a first difference by setting explanatory variables to their default (mean/mode) values, with high (75th percentile) and low (25th percentile) values for the specified explanatory variable:
+
+\begin{verbatim}
+> x.high <- setx(z.plm1, value = quantile(Grunfeld$value, 0.75))
+> x.low <- setx(z.plm1, value = quantile(Grunfeld$value, 0.25))
+\end{verbatim}
+
+\begin{verbatim}
+> s.plm1 <- sim(z.plm1, x=x.high, x1=x.low)
+
+> summary(s.plm1)
+
+> plot(s.plm1)
+\end{verbatim}
+
+
+\item Zelig, plm, and multiple imputation
+
+If you plan to use Zelig to analyze TSCS data in multiple imputation datasets, please use the following syntax:
+\begin{verbatim}
+> z.out <- zelig(log(gsp) ~ log(pcap) + log(pc) + log(emp) + unemp, 
++ model="plm", data=mi(produc1,produc2,produc3,produc4,produc5,produc6), 
++ plm.index=c("state", "year"))
+\end{verbatim}
+That is, set the sectional/individual and time indices in the \texttt{zelig()} command rather than making each MI dataset a pdata.frame before running zelig.
+Setting the multiply imputed data frames as \texttt{pdata.frames} before using the \texttt{zelig()} command generates the following error and warning:
+
+\texttt{> Error in model.matrix.pFormula(formula, data, rhs = 1, model = model,  : NA in the individual index variable}
+  
+\texttt{> In `[.data.frame`(index, as.numeric(rownames(mf)), ) : NAs introduced by coercion}
+  
+\end{enumerate}
+
+
+\subsubsection{Model}
+Let \(Y_{it}\) be the continuous dependent variable, with group (cross-sections) \(i\) and time periods \(t\), for \(i=1,\ldots,J\) and \(t=1,\ldots,T\)
+
+Then we may estimate the following model (known as the ``unobserved effects model'')
+\begin{eqnarray*}
+y_{it}	&	=	&	\alpha + \beta_{itk}x_{itk} + u_i + \epsilon_{it}
+\end{eqnarray*}
+where \(\beta_k\) are the explanatory parameters, \(u_i\) are the unobserved cross-sectional effects, and \(\epsilon_{it}\) is the idiosyncratic error.
+
+We often discuss whether to treat the unobserved effects model as one of ``random'' effects or ``fixed'' effects. In practice, this means:
+\begin{itemize}
+\item 	A \emph{random effects model} assumes that there is no correlation between the observed explanatory variables and the unobserved effect, \(u_i\). That is, \(\mathrm{Corr}(\beta_{it},u_i) = 0\). The random effects model estimates \(u_i\) and \(\epsilon_{it}\) as a \emph{composite error term}, \(v_{it}\).
+\item	A \emph{fixed effects model} allows for some arbitrary correlation. That is, \(\mathrm{Corr}(\beta_{it}, u_i) \neq 0\). The fixed effects model estimates the component error terms \(\epsilon_{it}\) and \(u_i\) \emph{separately}. (\(u_i\) is, in essence, estimated as a vector of intercepts, one for each \(i\) in the regression equation.) Fixed effects models, in essence, transform each variable by subtracting the group mean of each variable (the ``fixed effect'' of being in the group). (Thus, there is no overall estimation intercept in the results of these estimations.)
+\end{itemize}
+
+The model's components are those of least squares regression.
+\begin{itemize}
+\item The \emph{stochastic} component is described by the densities % with i.i.d. distributions (which are generally treated as Normal)
+\begin{eqnarray*}
+%Y_i		&	=	&	Normal(y_i|\mu_i, \sigma^2)
+Y_{it}	&	=	&	f(y_{it}|\mu_{it}, \sigma^2) \\
+u_i		&	=	&	g(\mu_u, \sigma^2_u)\\
+\epsilon_{it}	&	=	&	h(\mu_\epsilon, \sigma^2_\epsilon)
+\end{eqnarray*}
+
+
+
+\item The \emph{systematic} component is given by
+\[\mu_{it} = x_{it}\beta\]
+\end{itemize}
+
+
+\subsubsection{Quantities of Interest}
+\begin{itemize}
+\item 
+The expected value is given by the mean of simulations from the stochastic component:
+\[E(Y_{it}) = X_{it}\beta\]
+\item The predicted value is drawn from the distribution defined by 
+\[\mathrm{Normal}(\mu_{it}, \sigma^2)\]
+\item The first difference in expected values, given when \(x1\) is specified is
+\[FD = E(Y|x_1) - E(Y|x)\]
+\end{itemize}
+
+
+\subsubsection{Output Values}
+\begin{itemize}
+\item From the {\tt zelig()} output stored in {\tt z.out}, you may
+extract:
+\begin{itemize}
+\item	\texttt{coefficients}
+\item	\texttt{residuals}
+\item	\texttt{df.residual}
+\item	\texttt{ercomp}
+\item	\texttt{args}
+\end{itemize}
+\item From {\tt summary(z.out)}, you may extract:
+\begin{itemize}
+\item	\texttt{coefficients}
+\item	\texttt{vcov}
+\item	\texttt{ercomp}individual and idiosyncratic variance, std. error, shares of each, and theta\footnote{(Random effects models only) theta is a function of the error component variances, \(\sigma^2_u\) and \(\sigma^2_\epsilon\), and is used in the GLS transformation required to estimate RE coefficients. It weights the estimates of the coefficients as follows:
+\begin{eqnarray*}(y_{it}-\theta\overline{y}_i)	&	=	& (1-\theta)\alpha + (x_{it}-\theta\overline{x}_i)\beta + \{(1-\theta)u_i + (\epsilon_{it}-\theta\overline{\epsilon}_i)\} \\
+\theta	&	=	&	1- \sqrt{\frac{\sigma^2_\epsilon}{T\sigma^2_u+\sigma^2_\epsilon}}
+\end{eqnarray*}
+where the \(\sigma^2\) are either given or estimated from the data.
+}
+\item	\texttt{fstatistic}
+\item	\texttt{r.squared} both raw and adjusted
+\item	\texttt{} 
+\end{itemize}
+\item From the {\tt sim()} output stored in {\tt s.out}:
+\begin{itemize}
+\item	\texttt{qi\$ev}: the simulated expected values for the specified values of x.
+\item	\texttt{qi\$pr}: the simulated predicted values drawn from the distributions defined by the expected values.
+\item	\texttt{qi\$fd}: the simulated first differences (or differences in expected values) for the specified values of x and x1.
+\end{itemize}
+\end{itemize}
+
+
+\subsubsection{Further Information}
+
+This Zelig module does not implement the %\texttt{pht()} (Hausman-Taylor model for instrumental variable estimation), \texttt{pvcm()} (variable coefficients models for panel data), \texttt{pgmm()} (generalized method of moments estimation for panel data), or 
+\texttt{pggls()} (general FGLS estimators for panel data). Users needing such functions may wish to investigate the mixed-effects regression procedures in Zelig.
+
+Linear models for panel (TSCS) data and the sample data used in the examples above are a part
+of the \texttt{plm} package by \citeauthor{croissantmillo2008a}. Users will wish to refer to the applicable help files: \texttt{help(plm)}, \texttt{help(pht)}, \texttt{help(pvcm)}, and \texttt{help(pgmm)}, as well as \citet{croissantmillo2008a}. 
+
+For more general help on panel data techniques, three excellent treatments are (in increasing order of difficulty and technical detail): \citet{wooldridge2006, greene2007a, wooldridge2002}.
+
+\subsubsection{Contributors}
+You may cite the panel data models in Zelig as:
+
+
+@article{croissantmillo2008a,
+	Accepted = {2008-03-20},
+	Author = {Croissant, Yves and Millo, Giovanni},
+	Coden = {JSSOBK},
+	Day = {29},
+	Issn = {1548-7660},
+	Journal = {Journal of Statistical Software},
+	Month = {7},
+	Number = {2},
+	Pages = {1--43},
+	Submitted = {2007-06-06},
+	Title = {Panel Data Econometrics in R: The plm Package},
+	Url = {http://www.jstatsoft.org/v27/i02},
+	Volume = {27},
+	Year = {2008},
+	Bdsk-Url-1 = {http://www.jstatsoft.org/v27/i02}}
+	
+
+@book{wooldridge2006,
+	Address = {Mason, OH},
+	Author = {Wooldridge, Jeffrey M.},
+	Booktitle = {Introductory econometrics: a modern approach},
+	Call-Number = {HB139},
+	Dewey-Call-Number = {330.01/5195},
+	Edition = {3rd ed},
+	Genre = {Econometrics},
+	Isbn = {0324289782 (hbk.)},
+	Library-Id = {2005924660},
+	Publisher = {Thomson/South-Western},
+	Title = {Introductory econometrics: a modern approach},
+	Year = {2006}}
+
+
+@book{wooldridge2002,
+	Address = {Cambridge, Mass.},
+	Author = {Wooldridge, Jeffrey M.},
+	Call-Number = {HB139},
+	Dewey-Call-Number = {330/.01/5195},
+	Genre = {Econometrics},
+	Isbn = {0262232197 (cloth)},
+	Library-Id = {2001044263},
+	Publisher = {MIT Press},
+	Title = {Econometric analysis of cross section and panel data},
+	Year = {2002}}
+
+@book{greene2007a,
+	Address = {Upper Saddle River, New Jersey},
+	Author = {Greene, William H.},
+	Edition = {6th},
+	Publisher = {Prentice Hall},
+	Title = {Econometric Analysis},
+	Year = {2007}}
