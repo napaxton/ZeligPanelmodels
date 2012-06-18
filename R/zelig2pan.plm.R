@@ -46,6 +46,7 @@ zelig2pan.plm <- function(formula, pan.model=NULL, pan.index=NULL,..., data) {
 #' @return ...
 #' @export
 pFormulaFix <- function(obj, zcall, call, ...) {                                                                                                       
-    class(obj$formula) <- c("Formula", "formula")                                                        
+    # class(obj$formula) <- c("Formula", "formula")                                                        
+	obj$call <- call
     obj                                                                                                  
 }

@@ -6,6 +6,6 @@
 #' @param ... parameters to pass to pmodel.response
 #' @return the exact result of a call to pmodel.response.pFormula(obj, ...)
 
-pmodel.response.Formula <- function (object, ...) {
-  plm:::pmodel.response.pFormula(object, ...)
+pmodel.response.Formula <- function (obj, ...) {
+  plm:::pmodel.response.pFormula(obj, ...)
 }

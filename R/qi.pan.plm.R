@@ -6,93 +6,120 @@
 #'   though this feature is currentlysupported by only a handful of models
 #' @param num an integer specifying the number of simulations to compute
 #' @param param a parameters object
-#' @return a list of key-value pairs specifying pairing titles of quantities of interest
-#'         with their simulations
+#' @return a list of key-value pairs specifying pairing titles of quantities of
+#' interest with their simulations
 #' @export
-#' based on a Zelig3 plm module and the Zelig4 qi.normal/ls.R functions
-
 qi.pan.plm <- function(obj, x=NULL, x1=NULL, y=NULL, num=1000, param=NULL) {  
-	message("qi.plm called")
-  k <- length(coef(obj))
-  coef <- coef(param)   # coef <- simpar[,1:k,drop = FALSE]
+
+  # Get simulated (??) parameters of the linear function... usually stylized as
+  # a beta
+  coef <- param$coefficients 
+
+  # Get the number of the parameters fit (fitted?) by the linear model
+  # number.of.parameters <- length(coef(obj))
+
+  # Get ancillary parameters... usually stylized as an alpha
   alpha <- alpha(param) # alpha <- simpar[,ncol(simpar)]
 
-  ev <- .compute.ev(k, coef, alpha, obj, x, num)
-  ev1 <- .compute.ev(k, coef, alpha, obj, x1, num)
+  # Get predictor terms. Note that this function is defined at the bottom of
+  # this page. Additionally, note the only difference between function calls is
+  # the last parameter.
+  tx1 <- makePredictorTermMatrix(formula(obj), obj$data, x)
+  tx2 <- makePredictorTermMatrix(formula(obj), obj$data, x1)
+
   
-  pr <- .compute.pr(ev,alpha)
-  #   pr1 <- .compute.pr(ev1, alpha)     
+  # NOTE: The following is probably not correct. Check "compute.ev" to make sure
+  # that everything is working smoothly.
 
-#   if (k < ncol(x)){
-#   x <- as.data.frame(x[,names(coef(obj)),drop = FALSE])
-#   }  
-#   rownames(x) <- NULL  # vacating the row names for the purposes of final output formatting
-#   # x param sims
-#   ev <- coef %*% t(x)       # matrix(coef %*% t(x), nrow=nrow(coef))
-#   pr <- matrix(NA, ncol = ncol(ev), nrow = nrow(ev))
-#   for (i in 1:ncol(ev)){
-# 	pr[,i] <- rnorm(length(ev[,i]), mean = ev[,i], # [4]
-# 					sd = alpha)
-#   } # end of the x parameter section
+  # Expected values
+  ev1 <- compute.ev(param$coefficients, tx1)
+  ev2 <- compute.ev(param$coefficients, tx2)
 
-#   # x1 param sims
-#   if (!is.null(x1)){    # filling in the matrix for the first differences
-#     if (k < ncol(x1)){
-#       x1 <- as.data.frame(x1[,names(coef(obj)),drop=FALSE])
-# 	}  
-#   	if (!is.null(x1)){   # vacating the row names for the purposes of final output formatting (applies to plm models only) 
-# 	   rownames(x1) <- NULL
-#   	}
-#     ev1 <- coef %*% t(x1) 
-# 	pr1 <- matrix(NA, ncol = ncol(ev1), nrow = nrow(ev1))
-#     for (i in 1:ncol(ev1)){
-# 		pr1[,i] <- rnorm(length(ev1[,i]), mean = ev1[,i], # [4]
-# 										  sd = alpha)
-# 	}
-#   }  # end of the x1 (first difference) parameter section
+# Compute *predicted values* here
+  # ...
+  # pr2 <- compute.pr(ev2,alpha)
+	# pr1 <- matrix(NA, nrow=nrow(ev1), ncol=ncol(ev1))
+	# for (i in 1:nrow(ev1)){
+	# 	pr1[i,] <- rnorm(ncol(ev1), mean = ev1[i,], sd = alpha[i])	#might just be alpha
+	# }
+	
+# First-differences
+  fd <- ev2 - ev1
 
-  # to compute the average treatment effects (comment out for testing)
-#   if (!is.null(y)) {
-#     yvar <- matrix(rep(y, nrow(param)), nrow = nrow(param), byrow = TRUE)
-#     tmp.ev <- yvar - ev        
-#     att.ev <- matrix(apply(tmp.ev, 1, mean), nrow = nrow(param))  
-#   } #Comment out for testing
-  
+  # Return simulations
   list(
-        "Expected Value: E(Y|X)" = ev,
-        "Expected Value: E(Y|X1)" = ev1,
-        "Predicted Value: Y|X" = pr,
-#         "Predicted Value: Y|X1" = pr1,
-        "First Differences (Expected Values): E(Y|X1) - E(Y|X)" = ev1-ev #,
-#         "First Difference (Predicted Values): Y|X1 - Y|X" = pr1-pr,
-#        "Average Treatment Effect for the Treated: Y - EV" = att.ev       
+        "Expected Value: E(Y|X)" = ev1,
+        # "Expected Value: E(Y|X1)" = ev2,
+        # "Predicted Value: Y|X" = pr1,
+		# "Predicted Value Y|X1" = pr2,
+        # "First Differences (Expected Values): E(Y|X1) - E(Y|X)" = fd
+		# "Average Treatment Effect" = 
 	)
+}  
+
+#' Compute Expected Values for pan.plm model
+#' 
+#' Computes expected values of the panel lm.
+#' @note This function should remain *UNexported*
+#' @param beta Simualted parameters from the fitted model
+#' @param x Explanatory variables specified by the setx function
+#' @return A numeric vector specifying the expected values of the derived from
+#' the statistical model, its data, and the values specified by the setx method.
+compute.ev <- function (beta, x) {
+
+  # Return NA if x isn't valid
+  if (is.null(x))
+    return(NA)
+
+  # Return the cross-multiplied value of the parameters and the predictor terms.
+  beta %*% x 
 }
 
-.compute.ev <- function(k, coef, alpha, obj, x=NULL, num=1000){
-	if (is.null(x))
-	    return(NA)
-   # coef = coef(param), alpha = alpha(param), k= getlength(getcoef(obj))
-#   if (!is.null(x)){    # filling in the matrix for the first differences
-    # if (k < ncol(x)){
-      # x <- as.data.frame(x[,names(coef(obj)),drop=FALSE]) #column names
-    # }  
-      if (!is.null(x)){   # vacating the row names for the purposes of final output formatting (applies to plm models only) 
-       rownames(x) <- NULL
-      }
-    ev <- matrix(coef %*% t(x), nrow=nrow(coef))   # could also be: ev <- matrix(coef %*% t(x), nrow=nrow(coef))       coef %*% t(x)
-	ev
+#' Return a 1-row Design Matrix for Use in Predicting Outcome Values
+#'
+#' Returns a 1xN matrix where N is the number of columns in the *DESIGN* matrix
+#' of the data-set. This matrix contains the values specified by the ``setx''
+#' which are used in statistical simulation and predicting expected values of
+#' this model.
+#' @param formula a ``pFormula'' object specifying response and predictor
+#' variables for the statistical model.
+#' @param data a ``data.frame'' or ``pdata.frame'' object which was used by
+#' the model-fitting function to find the fit
+#' @param x a ``setx'' object which specifies the appropriate value to assign to
+#' each variable
+#' @return a vector/matrix to be used along with a design matrix to produce
+#' expected/predicted values of the model
+makePredictorTermMatrix <- function (formula, data, x) {
+
+  # Return NULL if x is invalid
+  if (is.null(x))
+    return(NULL)
+
+  # If the columns mismatch, give a warning that will explain the upcoming
+  # error. Have no doubt about it. There will be an error.
+  if (any(colnames(data) != colnames(x$updated))) {
+    warning("Data frame used in 'x' has different column names than in the", 
+            "fitted model.")
   }
-  
-.compute.pr <- function(ev, alpha){
-    pr <- matrix(NA,nrow = nrow(ev), ncol = ncol(ev))
-	for (i in nrow(ev))
-		pr[i,] <- rnorm(ncol(ev), mean = ev[i,], sd = alpha)  
-	
-	pr <- matrix(data=1, ncol = ncol(ev), nrow = nrow(ev)) 
-        for (i in 1:ncol(ev)){   # for (i in 1:nrow(ev)) #as per qi.normal.R in Z4
-            pr[,i] <- rnorm(length(ev[,i]), mean = ev[,i], # [4]   #pr[i,] <- rnorm(ncol(ev), mean = ev[i,], 
-        									  sd = alpha)                                     # sd = alpha[i])
-    	}   
-    pr
-}  
+
+  # Add the summarized data-set to the data-set.
+  # Note that we must swap the first row of the data-set, instead of using:
+  #   data <- rbind(x$updated, data)
+  # because pmodel.matrix requires that the data-frame be the exact same size
+  # as the original used in fitting the model.
+  data[1, ] <- x$updated
+
+  # Construct the design matrix. Note that, in a perfect world, we would be able
+  # to write the following as:
+  #   mm <- model.matrix(formula, x$updated)
+  # This can't be done because of the implementation of "pmodel.matrix", where
+  # certain columns' role as fixed, etc. is specified by variace(column) != 0
+  # ... Clearly for a 1-row data.frame, variance is NA or 0.
+  mm <- model.matrix(formula, data)
+
+  # Return only the first row, since the other rows really hold no significance
+  # for our purposes (statistical simulation and prediction). That is, creating
+  # the complete model.matrix is merely a workaround for plm. This method will
+  # be deprecated if/when plm is patched.
+  mm[1, ]
+}

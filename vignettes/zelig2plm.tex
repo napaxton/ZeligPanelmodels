@@ -1,12 +1,14 @@
-\subsection{{\tt panelmodel}: Panel Data (TSCS) Methods for [Continuous] Dependent Variables}
+\subsection{{\tt ZeligPanelmodels}: Panel Data (TSCS) Methods for [Continuous] Dependent Variables}
 \label{zelig2plm}
-The \texttt{plm} package allows for the estimation of panel/CSTS (cross-section, time series) models in a form familiar to political scientists, economists, and sociologists using such data. As the \texttt{plm} packages authors state, ``plm is a package for R which intends to make the estimation of linear panel models straightforward. plm provides functions to estimate a wide variety of models and to make (robust) inference.''
+The \texttt{plm} package allows for the estimation of panel/CSTS (cross-section, time series) models in a form familiar to political scientists, economists, and sociologists using such data. As the \texttt{plm} package authors state, ``plm is a package for \R which intends to make the estimation of linear panel models straightforward. plm provides functions to estimate a wide variety of models and to make (robust) inference.''
 
 The package provides functions to estimate linear models for panel data with: pooled, fixed, random, and between effects; individual or time-based effects; instrumental variable models; variable coefficient models; and general method of moments (GMM) models.
 
+ZeligPanelmodels allows for the interface of plm and Zelig 4.
+
 \subsubsection{Syntax}
 \begin{verbatim}
-> z.out <- zelig((Y ~ X1 + X2, model = "plm", data = mydata, 
+> z.out <- zelig((Y ~ X1 + X2, model = "pan.plm", data = mydata, 
 + pan.model="within", pan.index=NULL) 
 > x.out <- setx(z.out) 
 > s.out <- sim(z.out, x=x.out)
@@ -27,7 +29,7 @@ Attach data:
 Estimate model with Zelig:
 
 \begin{verbatim}
-> z.plm1 <- zelig(inv ~ value + capital, model="plm", data=Grunfeld, 
+> z.plm1 <- zelig(inv ~ value + capital, model="pan.plm", data=Grunfeld, 
 + pan.model="random", pan.index=c("firm","year"))
 \end{verbatim}
 
@@ -59,8 +61,8 @@ If you plan to use Zelig to analyze TSCS data in multiple imputation datasets, p
 + model="plm", data=mi(produc1,produc2,produc3,produc4,produc5,produc6), 
 + plm.index=c("state", "year"))
 \end{verbatim}
-That is, set the sectional/individual and time indices in the \texttt{zelig()} command rather than making each MI dataset a pdata.frame before running zelig.
-Setting the multiply imputed data frames as \texttt{pdata.frames} before using the \texttt{zelig()} command generates the following error and warning:
+That is, set the sectional/individual and time indices in the \texttt{zelig()} command rather than making each MI dataset a \texttt{pdata.frame} before running zelig.
+Setting the multiply imputed data frames as \texttt{pdata.frames} before using the \texttt{zelig()} command generates the following error and warning, as well as preventing the zelig command from generating output:
 
 \texttt{> Error in model.matrix.pFormula(formula, data, rhs = 1, model = model,  : NA in the individual index variable}
   
@@ -76,12 +78,12 @@ Then we may estimate the following model (known as the ``unobserved effects mode
 \begin{eqnarray*}
 y_{it}	&	=	&	\alpha + \beta_{itk}x_{itk} + u_i + \epsilon_{it}
 \end{eqnarray*}
-where \(\beta_k\) are the explanatory parameters, \(u_i\) are the unobserved cross-sectional effects, and \(\epsilon_{it}\) is the idiosyncratic error.
+where \(\beta_k\) are the \(k\) explanatory parameters, \(u_i\) are the unobserved cross-sectional effects (so-called ``sytematic'' error), and \(\epsilon_{it}\) is the idiosyncratic (non-systematic) error.
 
 We often discuss whether to treat the unobserved effects model as one of ``random'' effects or ``fixed'' effects. In practice, this means:
 \begin{itemize}
 \item 	A \emph{random effects model} assumes that there is no correlation between the observed explanatory variables and the unobserved effect, \(u_i\). That is, \(\mathrm{Corr}(\beta_{it},u_i) = 0\). The random effects model estimates \(u_i\) and \(\epsilon_{it}\) as a \emph{composite error term}, \(v_{it}\).
-\item	A \emph{fixed effects model} allows for some arbitrary correlation. That is, \(\mathrm{Corr}(\beta_{it}, u_i) \neq 0\). The fixed effects model estimates the component error terms \(\epsilon_{it}\) and \(u_i\) \emph{separately}. (\(u_i\) is, in essence, estimated as a vector of intercepts, one for each \(i\) in the regression equation.) Fixed effects models, in essence, transform each variable by subtracting the group mean of each variable (the ``fixed effect'' of being in the group). (Thus, there is no overall estimation intercept in the results of these estimations.)
+\item	A \emph{fixed effects model} allows for such correlation. That is, \(\mathrm{Corr}(\beta_{it}, u_i) \neq 0\). The fixed effects model estimates the component error terms \(\epsilon_{it}\) and \(u_i\) \emph{separately}. (\(u_i\) is, in essence, estimated as a vector of intercepts, one for each \(i\) in the regression equation.) Fixed effects models, in essence, transform each variable by subtracting the group mean of the variable (the ``fixed effect'' of being in the group). (Thus, there is no overall estimation intercept in the results of these estimations.)
 \end{itemize}
 
 The model's components are those of least squares regression.
@@ -108,7 +110,7 @@ The expected value is given by the mean of simulations from the stochastic compo
 \[E(Y_{it}) = X_{it}\beta\]
 \item The predicted value is drawn from the distribution defined by 
 \[\mathrm{Normal}(\mu_{it}, \sigma^2)\]
-\item The first difference in expected values, given when \(x1\) is specified is
+\item The first difference in expected values, given when \(x_1\) is specified is
 \[FD = E(Y|x_1) - E(Y|x)\]
 \end{itemize}
 
@@ -128,11 +130,11 @@ extract:
 \begin{itemize}
 \item	\texttt{coefficients}
 \item	\texttt{vcov}
-\item	\texttt{ercomp}individual and idiosyncratic variance, std. error, shares of each, and theta\footnote{(Random effects models only) theta is a function of the error component variances, \(\sigma^2_u\) and \(\sigma^2_\epsilon\), and is used in the GLS transformation required to estimate RE coefficients. It weights the estimates of the coefficients as follows:
+\item	\texttt{ercomp}:individual and idiosyncratic variance, standard error, shares of each, and theta\footnote{(Random effects models only) theta is a function of the error component variances, \(\sigma^2_u\) and \(\sigma^2_\epsilon\), and is used in the GLS transformation required to estimate RE coefficients. It weights the estimates of the coefficients as follows:
 \begin{eqnarray*}(y_{it}-\theta\overline{y}_i)	&	=	& (1-\theta)\alpha + (x_{it}-\theta\overline{x}_i)\beta + \{(1-\theta)u_i + (\epsilon_{it}-\theta\overline{\epsilon}_i)\} \\
 \theta	&	=	&	1- \sqrt{\frac{\sigma^2_\epsilon}{T\sigma^2_u+\sigma^2_\epsilon}}
 \end{eqnarray*}
-where the \(\sigma^2\) are either given or estimated from the data.
+where the \(\sigma^2\) are either given or (more usually) estimated from the data.
 }
 \item	\texttt{fstatistic}
 \item	\texttt{r.squared} both raw and adjusted

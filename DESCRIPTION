@@ -4,8 +4,18 @@ Date: 2012-02-24
 Title: Zelig Implementation of Linear Models for Panel Data
 Author: Nathan A. Paxton <napaxton@post.harvard.edu>
 Maintainer: Nathan A. Paxton <napaxton@post.harvard.edu>
-Depends: Zelig, plm
-Description: Allows Zelig to interface with  plm package (for econometric style est. of panel data)
+Depends:
+    Zelig,
+    plm
+Description: Allows Zelig to interface with plm package (for econometric style
+    est. of panel data)
 License: GPL (>=2)
 URL: http://github.com/napaxton/ZeligPanelmodels
 Packaged: 2012-02-21 16:19:54 UTC; root
+Collate:
+    'describe.pan.plm.R'
+    'param.pan.plm.R'
+    'pmodel.response.Formula.R'
+    'qi.pan.plm.R'
+    'zelig2pan.plm.R'
+    'ZeligPanelmodels-package.R'
