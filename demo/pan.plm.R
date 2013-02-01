@@ -38,8 +38,8 @@ summary(z.out.fe)
 
 # Summarize the simulated quantities of interest
 
-//summary(s.out1)
+summary(s.out1)
 
 # Plot the simulated quantities of interest
 
-//plot(s.out1)
+plot(s.out1)

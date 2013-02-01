@@ -3,7 +3,7 @@
 \title{Extract Samples from a Distribution in Order to Pass Them to the \code{qi} Function
 (this is primarily a helper function for the plm model)}
 \usage{
-  param.pan.plm(obj, num = 1000, ...)
+  \method{param}{pan.plm}(obj, num = 1000, ...)
 }
 \arguments{
   \item{obj}{a zelig object}

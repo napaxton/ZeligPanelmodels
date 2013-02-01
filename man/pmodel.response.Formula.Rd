@@ -2,10 +2,10 @@
 \alias{pmodel.response.Formula}
 \title{Create a wrapper for the pmodel.response.pFormula function}
 \usage{
-  pmodel.response.Formula(obj, ...)
+  pmodel.response.Formula(object, ...)
 }
 \arguments{
-  \item{obj}{a ``Formula'' object}
+  \item{object}{a ``Formula'' object}
 
   \item{...}{parameters to pass to pmodel.response}
 }

@@ -2,7 +2,8 @@
 \alias{qi.pan.plm}
 \title{Compute Quantities of Interest for the Zelig Model plm}
 \usage{
-  qi.pan.plm(obj, x = NULL, x1 = NULL, y = NULL,
+
+  \method{qi}{pan.plm}(obj, x = NULL, x1 = NULL, y = NULL,
     num = 1000, param = NULL)
 }
 \arguments{

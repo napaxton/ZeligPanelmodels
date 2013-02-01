@@ -1,6 +1,6 @@
 Package: ZeligPanelmodels
-Version: 0.1-1
-Date: 2012-02-24
+Version: 1.0.0
+Date: 2013-02-02
 Title: Zelig Implementation of Linear Models for Panel Data
 Author: Nathan A. Paxton <napaxton@post.harvard.edu>
 Maintainer: Nathan A. Paxton <napaxton@post.harvard.edu>

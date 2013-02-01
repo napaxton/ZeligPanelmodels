@@ -48,7 +48,7 @@ qi.pan.plm <- function(obj, x=NULL, x1=NULL, y=NULL, num=1000, param=NULL) {
 
   # Return simulations
   list(
-        "Expected Value: E(Y|X)" = ev1,
+        "Expected Value: E(Y|X)" = ev1 #,
         # "Expected Value: E(Y|X1)" = ev2,
         # "Predicted Value: Y|X" = pr1,
 		# "Predicted Value Y|X1" = pr2,

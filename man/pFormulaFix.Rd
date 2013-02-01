@@ -11,6 +11,8 @@ Recast the plm object from pFormula class to Formula class}
   \item{zcall}{..}
 
   \item{call}{...}
+  
+  \item{...}{...}
 }
 \value{
   ...
