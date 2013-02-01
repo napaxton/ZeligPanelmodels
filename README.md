@@ -7,23 +7,28 @@ The development branch of ZeligPanelmodels is where to implement major and minor
 
 The plm package has several top-level functions for the estimation of models. These include:
 
-* ``` plm(formula, data, subset, na.action, effect = c("individual","time","twoways"),
-    model = c("within","random","ht","between","pooling","fd"),
-    random.method = c("swar","walhus","amemiya","nerlove", "kinla"),
-    inst.method = c("bvk","baltagi"), index = NULL, ...)
-  ```
+1. A basic function for estimating most panel-data models (fixed effects, random effects, between effects, first differences, etc.)
 
-* ``` pggls(formula, data, subset, na.action, effect = c("individual","time"), model = c("within","random","pooling","fd"),
-index = NULL, ...)
-  ```
+        plm(formula, data, subset, na.action, effect = c("individual","time","twoways"), model = c("within","random",
+        "ht","between","pooling","fd"), random.method = c("swar","walhus","amemiya","nerlove", "kinla"), 
+        inst.method = c("bvk","baltagi"), index = NULL, ...)
 
-* ``` pht(formula, data, subset, na.action, index = NULL, ...)
-```
+2. General FGLS estimation
 
-* ``` pvcm(formula, data, subset, na.action, effect = c("individual","time"),
-     model = c("within","random"), index = NULL, ...)
-```
+        pggls(formula, data, subset, na.action, effect = c("individual","time"), model = c("within","random",
+        "pooling","fd"), index = NULL, ...)
 
-* The package also includes ```pccep()``` and ```pggm()``` estimators. Currently, I have no immediate plans to include these in ZeligPanelmodels
+3. Hausman-Taylor estimator 
 
-As of Version 1.0.0 of the package, the plm() estimator is included.
+        pht(formula, data, subset, na.action, index = NULL, ...)
+
+4. Variable coefficients model
+
+        pvcm(formula, data, subset, na.action, effect = c("individual","time"),
+        model = c("within","random"), index = NULL, ...) 
+
+The package also includes ```pccep()``` and ```pggm()``` estimators. Currently, I have no immediate plans to include these in ZeligPanelmodels
+
+As of Version 1.0.0 of the package, the ```plm()``` estimator is included.
+
+Subsequent versions will include estimators 2-4.
