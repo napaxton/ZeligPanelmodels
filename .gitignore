@@ -6,5 +6,7 @@
 ^.Rhistory$
 ^.DS_Store$
 .Rproj.user
-ZeligPanelmodels.Rproj
+^.Rproj$
 misctests.R
+
+.Rhistory
