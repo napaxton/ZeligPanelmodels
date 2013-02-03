@@ -19,6 +19,3 @@ param.pan.plm <-function(obj, num=1000, ...) {
        alpha = alpha
        )
 }
-
-
-

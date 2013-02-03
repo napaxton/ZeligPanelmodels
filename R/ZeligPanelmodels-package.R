@@ -2,8 +2,8 @@
 #' 
 #' \tabular{ll}{
 #'   Package: \tab ZeligPanelmodels\cr
-#'   Version: \tab 1.0.0\cr
-#'   Date: \tab 2013-02-01\cr
+#'   Version: \tab 1.1.0\cr
+#'   Date: \tab 2013-02-02\cr
 #'   Depends: Zelig, plm
 #'   License: \tab GPL version 2 or newer\cr
 #' }
